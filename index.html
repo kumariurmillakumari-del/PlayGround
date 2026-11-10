@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#07141a" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='32' fill='%2307141a'/%3E%3Cpath d='M18 45 38 16h9L28 45z' fill='%23d8ff4f'/%3E%3C/svg%3E" />
+<title>Neon Sprint — Bike Racing</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=DM+Sans:wght@400;500;600;700;800&display=swap');
+:root{color-scheme:dark;--ink:#f3f5ed;--muted:#a9b9b8;--lime:#d8ff4f;--cyan:#69f2de;--panel:rgba(9,24,29,.82)}
+*{box-sizing:border-box}html,body{height:100%;margin:0;overflow:hidden;background:#07141a;color:var(--ink);font-family:'DM Sans',sans-serif}body{touch-action:none;user-select:none;-webkit-user-select:none}
+#game{position:relative;width:100%;height:100%;min-height:100dvh;overflow:hidden;background:#07141a}canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.vignette{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(5,16,20,.38),transparent 25%,transparent 68%,rgba(5,16,20,.54)),radial-gradient(ellipse at center,transparent 42%,rgba(2,10,14,.32) 100%)}
+.topbar{position:absolute;top:max(22px,env(safe-area-inset-top));left:clamp(18px,4vw,58px);right:clamp(18px,4vw,58px);display:flex;align-items:flex-start;justify-content:space-between;z-index:2;pointer-events:none}.brand{display:flex;align-items:center;gap:12px}.brand-mark{width:38px;height:38px;border:1px solid rgba(216,255,79,.65);border-radius:50%;display:grid;place-items:center;color:var(--lime);font-size:20px;box-shadow:0 0 24px #d8ff4f30}.brand-copy{font-size:11px;letter-spacing:.24em;font-weight:800;line-height:1.2}.brand-copy span{display:block;color:var(--lime);font-size:9px;letter-spacing:.3em;margin-top:4px}.run-stats{display:flex;gap:clamp(16px,3vw,42px);align-items:flex-start}.stat{text-align:right}.stat-label{color:#afc2c0;font-size:9px;font-weight:700;letter-spacing:.19em;text-transform:uppercase}.stat-value{font-family:'Barlow Condensed',sans-serif;font-size:clamp(21px,3vw,31px);font-weight:700;line-height:1.08;letter-spacing:.02em}.stat-value em{font-size:12px;color:var(--muted);font-style:normal;font-family:'DM Sans',sans-serif;font-weight:600}
+.distance-wrap{position:absolute;z-index:2;left:50%;transform:translateX(-50%);top:max(26px,env(safe-area-inset-top));width:min(27vw,260px);text-align:center;pointer-events:none}.distance-top{display:flex;justify-content:space-between;color:#b8c5c2;font-size:8px;letter-spacing:.18em;font-weight:700}.distance-track{height:3px;background:#d9ebe22b;margin-top:8px;border-radius:4px;overflow:hidden}.distance-fill{width:0;height:100%;background:var(--lime);box-shadow:0 0 10px var(--lime);transition:width .1s linear}
+.speedo{position:absolute;bottom:max(28px,env(safe-area-inset-bottom));left:clamp(18px,4vw,58px);z-index:2;pointer-events:none}.speed-number{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(44px,7vw,72px);line-height:.8;letter-spacing:-.04em}.speed-number span{font-size:11px;letter-spacing:.18em;color:#bed0ca;margin-left:6px}.speed-caption{font-size:9px;letter-spacing:.22em;color:#aabbb5;margin-top:8px;font-weight:700}.boost-wrap{position:absolute;bottom:max(32px,env(safe-area-inset-bottom));right:clamp(18px,4vw,58px);width:clamp(112px,17vw,174px);z-index:2;pointer-events:none}.boost-head{display:flex;justify-content:space-between;font-size:9px;letter-spacing:.16em;font-weight:800;color:#d4e5db}.boost-track{margin-top:8px;height:6px;border-radius:8px;background:#d9ebe226;overflow:hidden}.boost-fill{height:100%;width:70%;border-radius:inherit;background:linear-gradient(90deg,#67e9d8,#d8ff4f);box-shadow:0 0 13px #baff5a80;transition:width .15s}
+.overlay{position:absolute;inset:0;z-index:5;display:grid;place-items:center;padding:24px;background:rgba(3,12,16,.22);transition:opacity .25s,visibility .25s}.overlay.hidden{opacity:0;visibility:hidden;pointer-events:none}.card{width:min(530px,100%);padding:clamp(28px,5vw,52px);border:1px solid #d5f3d529;background:linear-gradient(145deg,rgba(11,31,34,.92),rgba(6,19,25,.89));box-shadow:0 30px 100px #02090bc0,inset 0 1px #ffffff12;backdrop-filter:blur(16px);text-align:center;position:relative;overflow:hidden}.card:before{content:'';position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,transparent,var(--lime),var(--cyan),transparent)}.eyebrow{font-size:10px;font-weight:800;letter-spacing:.34em;color:var(--lime);text-transform:uppercase}.card h1{font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;font-size:clamp(56px,10vw,94px);line-height:.82;letter-spacing:-.035em;margin:19px 0 15px;font-weight:900}.card h1 span{display:block;color:var(--lime)}.card p{margin:0 auto;color:#b5c5c2;line-height:1.65;font-size:13px;max-width:350px}.chips{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:23px 0 26px}.chip{padding:7px 10px;border:1px solid #d8ebe326;color:#d1dfd7;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase}.chip b{color:var(--lime);margin-right:5px}.primary{border:0;background:var(--lime);color:#11201a;padding:15px 27px;min-width:190px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:900;letter-spacing:.19em;text-transform:uppercase;cursor:pointer;box-shadow:0 7px 28px #d8ff4f22;transition:transform .15s,filter .15s}.primary:hover{transform:translateY(-2px);filter:brightness(1.08)}.footnote{margin-top:16px!important;font-size:9px!important;letter-spacing:.13em;color:#839792!important;text-transform:uppercase}
+.pause-btn{position:absolute;right:clamp(18px,4vw,58px);top:90px;z-index:3;pointer-events:auto;background:#081b20a8;border:1px solid #d8ebe344;color:#e8f2eb;width:38px;height:38px;display:grid;place-items:center;cursor:pointer;font-size:14px}.pause-btn:disabled{opacity:.35;cursor:default}.toast{position:absolute;z-index:4;top:20%;left:50%;transform:translate(-50%,-10px);padding:10px 15px;background:#122d2ce8;border:1px solid #d8ff4f80;color:var(--lime);font-size:10px;letter-spacing:.14em;font-weight:800;opacity:0;transition:.3s;pointer-events:none;white-space:nowrap}.toast.show{opacity:1;transform:translate(-50%,0)}
+.touch-controls{position:absolute;z-index:3;left:16px;right:16px;bottom:max(105px,calc(env(safe-area-inset-bottom) + 82px));display:none;justify-content:space-between;pointer-events:none}.touch-btn{width:62px;height:62px;border-radius:50%;border:1px solid #e8f9e84f;background:#07191db8;color:#f5fff4;font-size:24px;display:grid;place-items:center;pointer-events:auto;touch-action:none;box-shadow:0 4px 20px #0006}.touch-btn:active,.touch-btn.down{background:#d8ff4f;color:#14221b}.boost-touch{width:52px;height:52px;margin-top:5px;color:var(--lime);font-size:17px;border-color:#d8ff4f80}.touch-hint{position:absolute;left:50%;transform:translateX(-50%);bottom:20px;color:#cad7ce80;font-size:8px;letter-spacing:.2em;white-space:nowrap;display:none}
+@media (pointer:coarse),(max-width:700px){.touch-controls{display:flex}.touch-hint{display:block}.distance-wrap{width:min(42vw,180px);top:max(82px,env(safe-area-inset-top))}.distance-top{white-space:nowrap;font-size:7px;letter-spacing:.13em}.pause-btn{top:max(82px,env(safe-area-inset-top));right:18px}.run-stats{gap:15px}.stat-label{font-size:8px}.speedo{bottom:max(30px,env(safe-area-inset-bottom))}.boost-wrap{bottom:max(35px,env(safe-area-inset-bottom))}.card{max-width:460px}.card h1{font-size:68px}}
+@media (max-height:560px){.card{padding:20px 30px}.card h1{font-size:55px;margin:10px 0}.chips{margin:12px 0 15px}.footnote{display:none}.touch-controls{bottom:92px}}
+</style>
+</head>
+<body>
+<main id="game" aria-label="Neon Sprint bike racing game">
+<canvas id="scene" aria-label="Bike racing scene"></canvas><div class="vignette"></div>
+<div class="topbar"><div class="brand"><div class="brand-mark">↗</div><div class="brand-copy">NEON SPRINT<span>ROAD SERIES / 01</span></div></div><div class="run-stats"><div class="stat"><div class="stat-label">Score</div><div class="stat-value" id="score">000000</div></div><div class="stat"><div class="stat-label">Best</div><div class="stat-value" id="best">000000</div></div></div></div>
+<div class="distance-wrap"><div class="distance-top"><span>RACE DISTANCE</span><span id="distanceText">0.0 / 2.4 KM</span></div><div class="distance-track"><div class="distance-fill" id="distanceFill"></div></div></div>
+<div class="speedo"><div class="speed-number"><span id="speed">000</span><span>KM/H</span></div><div class="speed-caption" id="speedCaption">READY TO RIDE</div></div>
+<div class="boost-wrap"><div class="boost-head"><span>⚡ NITRO</span><span id="boostText">70%</span></div><div class="boost-track"><div class="boost-fill" id="boostFill"></div></div></div>
+<button class="pause-btn" id="pauseBtn" aria-label="Pause game" disabled>Ⅱ</button><div class="toast" id="toast">NITRO PICKUP +25%</div>
+<div class="touch-controls"><button class="touch-btn" id="leftBtn" aria-label="Steer left">‹</button><button class="touch-btn boost-touch" id="boostBtn" aria-label="Hold to use nitro">⚡</button><button class="touch-btn" id="rightBtn" aria-label="Steer right">›</button></div><div class="touch-hint">HOLD TO STEER · HOLD ⚡ FOR NITRO</div>
+<section class="overlay" id="overlay"><div class="card"><div class="eyebrow" id="eyebrow">A NEW KIND OF RUSH</div><h1 id="title">NEON<span>SPRINT</span></h1><p id="message">Take the long way fast. Weave through traffic, collect nitro, and own the canyon road.</p><div class="chips" id="chips"><div class="chip"><b>← →</b> STEER</div><div class="chip"><b>SPACE</b> NITRO</div><div class="chip"><b>P</b> PAUSE</div></div><button class="primary" id="startBtn">START YOUR ENGINE</button><p class="footnote" id="footnote">2.4 KM TO THE FINISH · DON'T LIFT</p></div></section>
+</main>
+<script>
+(() => {
+'use strict';
+const canvas=document.getElementById('scene'),ctx=canvas.getContext('2d');
+const $=id=>document.getElementById(id);
+const ui={overlay:$('overlay'),eyebrow:$('eyebrow'),title:$('title'),message:$('message'),chips:$('chips'),start:$('startBtn'),foot:$('footnote'),pause:$('pauseBtn'),score:$('score'),best:$('best'),speed:$('speed'),speedCaption:$('speedCaption'),boost:$('boostFill'),boostText:$('boostText'),distance:$('distanceFill'),distanceText:$('distanceText'),toast:$('toast')};
+let W=0,H=0,dpr=1,last=0,elapsed=0,score=0,distance=0,speed=0,boost=70,steer=0,playerX=0,roadOffset=0,spawnTimer=0,objects=[],particles=[],keys={},state='title',toastTimer=0,shake=0;
+const GOAL=2400,BASE_SPEED=220,MAX_SPEED=330;
+let best=Number(localStorage.getItem('neonSprintBest')||0);
+const lanes=[-.68,0,.68];
+ui.best.textContent=String(best).padStart(6,'0');
+function resize(){dpr=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;canvas.width=Math.floor(W*dpr);canvas.height=Math.floor(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0)}
+window.addEventListener('resize',resize);resize();
+function rand(a,b){return a+Math.random()*(b-a)}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function roadCenter(y){const t=elapsed*.21+y*.0018;return W*.5+Math.sin(t)*W*.085+Math.sin(t*.47+1.5)*W*.045}
+function roadWidth(y){const p=clamp(y/H,0,1);return W*(.16+p*.62)}
+function roadX(lane,y){return roadCenter(y)+lane*roadWidth(y)*.38}
+function roundedRect(c,x,y,w,h,r){c.beginPath();c.roundRect(x,y,w,h,r)}
+function drawBackground(){
+ const sky=ctx.createLinearGradient(0,0,0,H*.68);sky.addColorStop(0,'#274c50');sky.addColorStop(.42,'#819078');sky.addColorStop(1,'#c7ae79');ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
+ // distant sun and canyon silhouettes
+ const sunX=W*.73,sunY=H*.21;const glow=ctx.createRadialGradient(sunX,sunY,5,sunX,sunY,H*.24);glow.addColorStop(0,'#fff0b14a');glow.addColorStop(1,'#fff0b100');ctx.fillStyle=glow;ctx.fillRect(sunX-H*.25,sunY-H*.25,H*.5,H*.5);
+ ctx.fillStyle='#324a45';ctx.beginPath();ctx.moveTo(0,H*.48);for(let x=0;x<=W+40;x+=40){ctx.lineTo(x,H*(.27+.11*Math.sin(x*.009+1)+.035*Math.sin(x*.023)))}ctx.lineTo(W,H*.57);ctx.lineTo(0,H*.57);ctx.fill();
+ ctx.fillStyle='#52634d';ctx.beginPath();ctx.moveTo(0,H*.51);for(let x=0;x<=W+30;x+=30){ctx.lineTo(x,H*(.35+.065*Math.sin(x*.012+2)+.025*Math.cos(x*.027)))}ctx.lineTo(W,H*.6);ctx.lineTo(0,H*.6);ctx.fill();
+ let ground=ctx.createLinearGradient(0,H*.48,0,H);ground.addColorStop(0,'#7f8659');ground.addColorStop(.25,'#4e6950');ground.addColorStop(1,'#193d3b');ctx.fillStyle=ground;ctx.fillRect(0,H*.47,W,H*.53);
+ // scrub dots that stream backward
+ for(let i=0;i<42;i++){let seed=i*87.13;let y=((i*173+roadOffset*1.65)%(H+60))-25;let side=i%2?1:-1;let x=roadCenter(y)+side*(roadWidth(y)*.58+30+((seed*13)%100));ctx.fillStyle=i%3?'#d9d59a45':'#1c413d77';ctx.beginPath();ctx.ellipse(x,y,2+(y/H)*3,1+(y/H)*2,0,0,Math.PI*2);ctx.fill()}
+ // road body
+ let top=-20,bottom=H+30,lc=roadCenter(top),rc=roadCenter(bottom),tw=roadWidth(top),bw=roadWidth(bottom);
+ ctx.beginPath();ctx.moveTo(lc-tw/2,top);ctx.lineTo(rc-bw/2,bottom);ctx.lineTo(rc+bw/2,bottom);ctx.lineTo(lc+tw/2,top);ctx.closePath();let road=ctx.createLinearGradient(0,0,0,H);road.addColorStop(0,'#364345');road.addColorStop(.5,'#303a3d');road.addColorStop(1,'#263235');ctx.fillStyle=road;ctx.fill();
+ // shoulder strips and bright road edges
+ for(let side of [-1,1]){ctx.beginPath();ctx.moveTo(lc+side*tw*.5,top);ctx.lineTo(rc+side*bw*.5,bottom);ctx.lineTo(rc+side*(bw*.5+Math.max(4,W*.009)),bottom);ctx.lineTo(lc+side*(tw*.5+Math.max(2,W*.004)),top);ctx.closePath();ctx.fillStyle=side<0?'#d7c78a':'#d26943';ctx.fill();ctx.strokeStyle='#fff0c966';ctx.lineWidth=1;ctx.stroke()}
+ // road grain / horizontal segments
+ for(let i=0;i<22;i++){let y=((i*57+roadOffset*1.3)%(H+60))-15;let c=roadCenter(y),w=roadWidth(y);ctx.fillStyle='#e7e1c408';ctx.fillRect(c-w*.48,y,w*.96,1+(y/H)*1.5)}
+ // dashed lane lines in perspective
+ for(let lane of [-1/3,1/3]){for(let i=0;i<16;i++){let y=((i*92+roadOffset*1.75)%(H+130))-60;let segH=12+(y/H)*24;let x=roadCenter(y)+lane*roadWidth(y)*.5;ctx.strokeStyle='#f0e9ce';ctx.globalAlpha=.35+(y/H)*.37;ctx.lineWidth=1+(y/H)*2.1;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(roadCenter(y+segH)+lane*roadWidth(y+segH)*.5,y+segH);ctx.stroke()}ctx.globalAlpha=1}
+}
+function drawCar(o){let y=o.y,p=clamp(y/H,0,1),x=roadX(o.lane,y),w=(24+p*39)*o.scale,h=(39+p*46)*o.scale;ctx.save();ctx.translate(x,y);ctx.rotate(o.tilt||0);ctx.fillStyle='#07101455';ctx.beginPath();ctx.ellipse(2,h*.33,w*.78,h*.42,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#12191b';roundedRect(ctx,-w*.58,-h*.35,w*1.16,h*.8,w*.18);ctx.fill();ctx.fillStyle=o.color;roundedRect(ctx,-w*.48,-h*.5,w*.96,h*.82,w*.2);ctx.fill();ctx.fillStyle='#152a30';roundedRect(ctx,-w*.36,-h*.29,w*.72,h*.29,w*.14);ctx.fill();ctx.fillStyle='#b9e8dd';ctx.globalAlpha=.8;ctx.beginPath();ctx.moveTo(-w*.32,-h*.23);ctx.lineTo(-w*.22,-h*.39);ctx.lineTo(w*.22,-h*.39);ctx.lineTo(w*.32,-h*.23);ctx.fill();ctx.globalAlpha=1;ctx.fillStyle='#ffe2a1';ctx.fillRect(-w*.37,h*.22,w*.18,h*.06);ctx.fillRect(w*.19,h*.22,w*.18,h*.06);ctx.restore()}
+function drawPickup(o){let y=o.y,x=roadX(o.lane,y),p=clamp(y/H,0,1),r=6+p*7;ctx.save();ctx.translate(x,y);ctx.rotate(elapsed*2);ctx.shadowBlur=18;ctx.shadowColor='#d8ff4f';ctx.fillStyle='#d8ff4f';ctx.beginPath();ctx.moveTo(0,-r*1.45);ctx.lineTo(r*.7,-r*.25);ctx.lineTo(r*.34,-r*.25);ctx.lineTo(r*.75,r*.65);ctx.lineTo(-r*.55,r*.08);ctx.lineTo(-r*.15,r*.08);ctx.closePath();ctx.fill();ctx.restore()}
+function drawBike(){let x=roadX(playerX,H*.79),y=H*.79,scale=clamp(H/700,.7,1.3),lean=steer*.16;ctx.save();ctx.translate(x,y);ctx.rotate(lean);ctx.scale(scale,scale);
+ // rear wheel and shadow
+ ctx.fillStyle='#05101390';ctx.beginPath();ctx.ellipse(0,11,24,38,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#101719';roundedRect(ctx,-8,8,16,37,8);ctx.fill();ctx.fillStyle='#9da7a0';roundedRect(ctx,-2,13,4,27,2);ctx.fill();
+ // tail light
+ ctx.shadowBlur=16;ctx.shadowColor='#ff604d';ctx.fillStyle='#ff5948';roundedRect(ctx,-6,9,12,5,2);ctx.fill();ctx.shadowBlur=0;
+ // rear fender / bodywork
+ ctx.fillStyle='#131b1c';ctx.beginPath();ctx.moveTo(-12,10);ctx.lineTo(-15,-9);ctx.lineTo(-10,-24);ctx.lineTo(0,-31);ctx.lineTo(10,-24);ctx.lineTo(15,-9);ctx.lineTo(12,10);ctx.closePath();ctx.fill();
+ let body=ctx.createLinearGradient(-14,-5,15,0);body.addColorStop(0,'#91b52f');body.addColorStop(.48,'#d8ff4f');body.addColorStop(1,'#81a72e');ctx.fillStyle=body;ctx.beginPath();ctx.moveTo(-12,6);ctx.lineTo(-12,-10);ctx.lineTo(-8,-22);ctx.lineTo(0,-28);ctx.lineTo(8,-22);ctx.lineTo(12,-10);ctx.lineTo(11,6);ctx.lineTo(0,12);ctx.closePath();ctx.fill();
+ ctx.fillStyle='#14292a';ctx.beginPath();ctx.moveTo(-7,-22);ctx.lineTo(0,-28);ctx.lineTo(7,-22);ctx.lineTo(4,-11);ctx.lineTo(-4,-11);ctx.closePath();ctx.fill();
+ // rider torso and helmet
+ ctx.fillStyle='#182328';ctx.beginPath();ctx.moveTo(-9,-12);ctx.lineTo(-7,-28);ctx.lineTo(-4,-37);ctx.lineTo(0,-41);ctx.lineTo(4,-37);ctx.lineTo(7,-28);ctx.lineTo(9,-12);ctx.lineTo(0,-7);ctx.closePath();ctx.fill();
+ ctx.fillStyle='#d9e8d2';ctx.beginPath();ctx.ellipse(0,-39,6,7,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#273c3b';roundedRect(ctx,-5,-42,10,5,3);ctx.fill();
+ // arms and handlebars
+ ctx.strokeStyle='#d4ded0';ctx.lineWidth=3;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(-6,-30);ctx.lineTo(-14,-21);ctx.lineTo(-13,-16);ctx.moveTo(6,-30);ctx.lineTo(14,-21);ctx.lineTo(13,-16);ctx.stroke();ctx.strokeStyle='#171d1c';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(-13,-16);ctx.lineTo(13,-16);ctx.stroke();
+ // exhaust glint
+ ctx.fillStyle='#d9ff69';ctx.globalAlpha=.7;ctx.fillRect(-12,0,3,7);ctx.fillRect(9,0,3,7);ctx.globalAlpha=1;ctx.restore()}
+function drawBoost(){if(!keys.Space||boost<=0||state!=='running')return;let x=roadX(playerX,H*.79),y=H*.79;ctx.save();ctx.globalCompositeOperation='screen';for(let i=0;i<3;i++){let grad=ctx.createLinearGradient(x,y+15,x,y+H*.23);grad.addColorStop(0,'#d8ff4f99');grad.addColorStop(1,'#69f2de00');ctx.strokeStyle=grad;ctx.lineWidth=3+i*2;ctx.beginPath();ctx.moveTo(x+(i-1)*9,y+15);ctx.lineTo(x+(i-1)*19,y+H*.16);ctx.stroke()}ctx.restore()}
+function drawParticles(dt){for(let i=particles.length-1;i>=0;i--){let p=particles[i];p.y+=p.vy*dt;p.life-=dt;ctx.globalAlpha=clamp(p.life,0,1);ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();if(p.life<=0)particles.splice(i,1)}ctx.globalAlpha=1}
+function render(dt){ctx.clearRect(0,0,W,H);drawBackground();objects.sort((a,b)=>a.y-b.y);for(const o of objects){if(o.kind==='car')drawCar(o);else drawPickup(o)}drawBoost();drawBike();drawParticles(dt);if(shake>0){shake=Math.max(0,shake-dt*20)}}
+function updateUI(){ui.score.textContent=String(Math.floor(score)).padStart(6,'0');ui.speed.textContent=String(Math.round(speed)).padStart(3,'0');ui.boost.style.width=boost+'%';ui.boostText.textContent=Math.round(boost)+'%';ui.distance.style.width=(distance/GOAL*100)+'%';ui.distanceText.textContent=(distance/1000).toFixed(1)+' / 2.4 KM';ui.speedCaption.textContent=state==='running'?(keys.Space&&boost>0?'NITRO ENGAGED':'CANYON RUN'):(state==='title'?'READY TO RIDE':state==='paused'?'RACE PAUSED':'RACE COMPLETE')}
+function reset(){elapsed=0;score=0;distance=0;speed=0;boost=70;playerX=0;steer=0;roadOffset=0;spawnTimer=.6;objects=[];particles=[];shake=0;state='running';ui.overlay.classList.add('hidden');ui.pause.disabled=false;updateUI()}
+function start(){if(state==='title'||state==='crashed'||state==='finished')reset();else if(state==='paused')resume()}
+function pause(){if(state!=='running')return;state='paused';showOverlay('RACE PAUSED','TAKE A<span>BREATHER</span>','The road will wait. Catch your breath, then get back in the race.','RESUME RACE','Press P or tap resume to keep rolling.');ui.pause.disabled=true}
+function resume(){if(state!=='paused')return;state='running';ui.overlay.classList.add('hidden');ui.pause.disabled=false;last=performance.now()}
+function showOverlay(eyebrow,title,message,button,foot){ui.eyebrow.textContent=eyebrow;ui.title.innerHTML=title;ui.message.textContent=message;ui.start.textContent=button;ui.foot.textContent=foot;ui.chips.style.display='none';ui.overlay.classList.remove('hidden')}
+function finish(crashed){state=crashed?'crashed':'finished';ui.pause.disabled=true;let final=Math.floor(score);if(final>best){best=final;localStorage.setItem('neonSprintBest',best);ui.best.textContent=String(best).padStart(6,'0')}
+ if(crashed){showOverlay('WIPEOUT','ROAD<span>WARRIOR</span>',`You made it ${(distance/1000).toFixed(2)} km and scored ${String(final).padStart(6,'0')}. Reset, find your line, and go again.`,'RIDE AGAIN','TIP: NITRO GETS YOU OUT OF A TIGHT SPOT');}
+ else{showOverlay('CANYON CIRCUIT / COMPLETE','CLEAN<span>FINISH</span>',`You owned the canyon in ${String(final).padStart(6,'0')} points. That road has your name on it.`,'RACE AGAIN','RIDE COMPLETE · NEW PERSONAL BEST?');}}
+function spawn(){let lane=lanes[Math.floor(Math.random()*lanes.length)];if(Math.random()<.25){objects.push({kind:'pickup',lane,y:-35,scale:1})}else{let colors=['#e8513e','#48a7a5','#c1a14b','#8b79c9','#e6e2d3'];objects.push({kind:'car',lane,y:-75,scale:1,color:colors[Math.floor(Math.random()*colors.length)],tilt:rand(-.025,.025),passed:false})}}
+function collectBurst(x,y,color){for(let i=0;i<13;i++)particles.push({x,y,vx:rand(-90,90),vy:rand(-130,80),life:rand(.35,.8),r:rand(1,3),color})}
+function update(dt){if(state!=='running')return;elapsed+=dt;let boosting=!!keys.Space&&boost>0;let target=boosting?MAX_SPEED:BASE_SPEED+Math.min(45,distance/45);if(boosting)boost=Math.max(0,boost-23*dt);else boost=Math.min(100,boost+2.7*dt);speed+=(target-speed)*Math.min(1,dt*2.7);let boostMult=speed/BASE_SPEED;
+ let input=(keys.ArrowRight||keys.KeyD||rightHeld?1:0)-(keys.ArrowLeft||keys.KeyA||leftHeld?1:0);steer+=(input-steer)*Math.min(1,dt*8);playerX=clamp(playerX+input*dt*(boosting?1.7:1.48),-.91,.91);
+ distance+=speed*dt/3.6;score+=dt*(speed*.24)+(boosting?dt*22:0);roadOffset+=speed*dt*.9;
+ spawnTimer-=dt;if(spawnTimer<=0){spawn();spawnTimer=rand(.72,1.12)*Math.max(.53,1-distance/3400)}
+ let py=H*.79,px=roadX(playerX,py);for(let i=objects.length-1;i>=0;i--){let o=objects[i];o.y+=speed*dt*(o.kind==='car'?.73:1.02);let ox=roadX(o.lane,o.y);if(o.kind==='car'&&Math.abs(o.y-py)<(22+H*.014)&&Math.abs(ox-px)<(25+W*.025)){if(boosting){score+=180;collectBurst(ox,o.y,'#d8ff4f');objects.splice(i,1);continue}else{shake=1;speed*=.64;boost=Math.max(0,boost-14);collectBurst(px,py,'#ff765e');objects.splice(i,1);playerX=clamp(playerX+(playerX>=o.lane?-.12:.12),-.9,.9);if(speed<90){finish(true);return}continue}}
+ if(o.kind==='pickup'&&Math.abs(o.y-py)<22&&Math.abs(ox-px)<32){boost=Math.min(100,boost+25);score+=250;collectBurst(ox,o.y,'#d8ff4f');ui.toast.classList.add('show');toastTimer=1;objects.splice(i,1);continue}
+ if(o.kind==='car'&&!o.passed&&o.y>py+30){o.passed=true;score+=55}if(o.y>H+100)objects.splice(i,1)}
+ if(distance>=GOAL){distance=GOAL;finish(false);return}if(toastTimer>0){toastTimer-=dt;if(toastTimer<=0)ui.toast.classList.remove('show')}updateUI()}
+let leftHeld=false,rightHeld=false;
+function loop(now){let dt=Math.min(.04,(now-last)/1000||0);last=now;if(state==='running')update(dt);render(dt);requestAnimationFrame(loop)}
+requestAnimationFrame(t=>{last=t;loop(t)});
+ui.start.addEventListener('click',start);ui.pause.addEventListener('click',pause);
+window.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space'].includes(e.code))e.preventDefault();keys[e.code]=true;if(e.code==='KeyP'||e.code==='Escape'){state==='running'?pause():state==='paused'?resume():null}if(e.code==='Enter'&&(state!=='running'))start()});window.addEventListener('keyup',e=>{keys[e.code]=false});window.addEventListener('blur',()=>{keys={};leftHeld=false;rightHeld=false;if(state==='running')pause()});
+function bindHold(id,set){const el=$(id);const down=e=>{e.preventDefault();set(true);el.classList.add('down');try{el.setPointerCapture(e.pointerId)}catch(_){}};const up=e=>{e.preventDefault();set(false);el.classList.remove('down')};el.addEventListener('pointerdown',down);el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);el.addEventListener('lostpointercapture',up)}
+bindHold('leftBtn',v=>leftHeld=v);bindHold('rightBtn',v=>rightHeld=v);bindHold('boostBtn',v=>keys.Space=v);
+// Allow touch users to activate nitro by holding the center of the playfield.
+let nitroPointer=null;canvas.addEventListener('pointerdown',e=>{if(e.pointerType==='touch'&&state==='running'&&e.clientY<H*.72){keys.Space=true;nitroPointer=e.pointerId}});window.addEventListener('pointerup',e=>{if(e.pointerId===nitroPointer){keys.Space=false;nitroPointer=null}});
+updateUI();
+})();
+</script>
+</body>
+</html>
